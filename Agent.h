@@ -15,7 +15,7 @@ it becomes dead, and finally disappearing.
 struct Structure;
 struct Point;
 
-class Agent : public Sim_object, private Moving_object {
+class Agent : public Sim_object {
 public:
 
 	Agent(const std::string& name_, Point location_);
@@ -29,11 +29,11 @@ public:
 	
 	// return this Agent's location
 	Point get_location() const override
-	{return get_current_location();}
+	{return moving_obj.get_current_location();}
 
 	// return true if this Agent is in motion
 	bool is_moving() const
-	{return is_currently_moving();}
+	{return moving_obj.is_currently_moving();}
 	
 	// tell this Agent to start moving to location destination_
 	virtual void move_to(Point destination_);
@@ -71,6 +71,7 @@ protected:
 	void lose_health(int attack_strength);
 
 private:
+	Moving_object moving_obj;
 
 	enum class Health_State_e { ALIVE, DYING, DEAD, DISAPPEARING };
 	Health_State_e health_state;

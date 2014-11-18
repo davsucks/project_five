@@ -5,18 +5,16 @@
 #include <iostream>
 using namespace std;
 
-static const int initial_health {5};
-static const int initial_speed {5};
+static const int initial_health_c {5};
+static const int initial_speed_c {5};
 
 Agent::Agent(const string& name_, Point location_)
 :
 Sim_object(name_),
-Moving_object(location_, initial_speed),
-health_state{Health_State_e::ALIVE}
+moving_obj(location_, initial_speed_c),
+health_state{Health_State_e::ALIVE},
+health{initial_health_c}
 {
-	// need to just set the health_state and initial_health
-	health_state = Health_State_e::ALIVE;
-	health = initial_health;
 	cout << "Agent " << name_ << " constructed" << endl;
 }
 
@@ -29,9 +27,9 @@ Agent::~Agent()
 void Agent::move_to(Point destination_)
 {
 	// tell the agent to move to the destination
-	start_moving(destination_);
+	moving_obj.start_moving(destination_);
 	// if moving output proper message and set the state accordingly
-	if (is_currently_moving())
+	if (moving_obj.is_currently_moving())
 		cout << get_name() << ": I'm on the way" << endl;
 	else
 		cout << get_name() << ": I'm already there" << endl;
@@ -40,8 +38,8 @@ void Agent::move_to(Point destination_)
 // tell this Agent to stop its activity
 void Agent::stop()
 {
-	if (is_currently_moving()) {
-		stop_moving();
+	if (moving_obj.is_currently_moving()) {
+		moving_obj.stop_moving();
 		cout << get_name() << ": I'm stopped" << endl;
 	}
 }
@@ -60,8 +58,8 @@ void Agent::update()
 {
 	switch(health_state) {
 		case Health_State_e::ALIVE:
-			if (is_currently_moving()) {
-				if (update_location())
+			if (moving_obj.is_currently_moving()) {
+				if (moving_obj.update_location())
 					cout << get_name() << ": I'm there!"<< endl;
 				else
 					cout << get_name() << ": step..." << endl;
@@ -85,12 +83,12 @@ void Agent::update()
 // output information about the current state
 void Agent::describe() const
 {
-	cout << get_name() << " at " << get_current_location() << endl;
+	cout << get_name() << " at " << moving_obj.get_current_location() << endl;
 	switch(health_state) {
 		case Health_State_e::ALIVE:
 			cout << "   Health is " << health << endl;
-			if (is_currently_moving()) {
-				cout << "   Moving at speed "<< get_current_speed() << " to " << get_current_destination() << endl;
+			if (moving_obj.is_currently_moving()) {
+				cout << "   Moving at speed "<< moving_obj.get_current_speed() << " to " << moving_obj.get_current_destination() << endl;
 			} else {
 				cout << "   Stopped" << endl;
 			}
@@ -113,7 +111,7 @@ void Agent::broadcast_current_state()
 {
 	switch(health_state) {
 		case Health_State_e::ALIVE:
-			g_Model_ptr->notify_location(get_name(), get_current_location());
+			g_Model_ptr->notify_location(get_name(), moving_obj.get_current_location());
 			break;
 		case Health_State_e::DYING:
 		case Health_State_e::DEAD:
@@ -144,7 +142,7 @@ void Agent::lose_health(int attack_strength)
 	health -= attack_strength;
 	if (health <= 0) {
 		health_state = Health_State_e::DYING;
-		stop_moving();
+		moving_obj.stop_moving();
 		cout << get_name() << ": Arrggh!" << endl;
 	} else {
 		cout << get_name() << ": Ouch!" << endl;
