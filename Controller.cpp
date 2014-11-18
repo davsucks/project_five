@@ -39,7 +39,7 @@ void clear_and_skip_line()
 void Controller::run()
 {
 	View* view = new View;
-	g_Model_ptr->attach(view);
+	Model::get_Model()->attach(view);
 
 	Command_Map_t command_map;
 	Agent_Command_Map_t agent_command_map;
@@ -68,7 +68,7 @@ void Controller::run()
 	string first_word;
 	while(true) {
 		try {
-		cout << "\nTime " << g_Model_ptr->get_time() << ": Enter command: ";
+		cout << "\nTime " << Model::get_Model()->get_time() << ": Enter command: ";
 		cin >> first_word;
 		if (first_word == "quit") {
 			delete view;
@@ -76,8 +76,8 @@ void Controller::run()
 			return;
 		}
 		// test if word is name of an agent
-		if (g_Model_ptr->is_agent_present(first_word)) {
-			Agent* agent = g_Model_ptr->get_agent_ptr(first_word);
+		if (Model::get_Model()->is_agent_present(first_word)) {
+			Agent* agent = Model::get_Model()->get_agent_ptr(first_word);
 			if (!agent->is_alive())
 				throw Error(dead_agent);
 			string cmd_name;
@@ -158,7 +158,7 @@ void Controller::pan(View* view)
 // program-wide commands
 void Controller::status(View* view)
 {
-	g_Model_ptr->describe();
+	Model::get_Model()->describe();
 }
 
 void Controller::show(View* view)
@@ -168,7 +168,7 @@ void Controller::show(View* view)
 
 void Controller::go(View* view)
 {
-	g_Model_ptr->update();
+	Model::get_Model()->update();
 }
 
 bool char_is_alnum(char c)
@@ -188,7 +188,7 @@ void check_name(string name)
 
 	bool too_short = name.length() < min_chars_c;
 	bool not_alnum = !string_is_alnum(name);
-	if (too_short || not_alnum || g_Model_ptr->is_name_in_use(name))
+	if (too_short || not_alnum || Model::get_Model()->is_name_in_use(name))
 		throw Error(invalid_name);
 }
 void Controller::build(View* view)
@@ -199,7 +199,7 @@ void Controller::build(View* view)
 	cin >> type;
 	Point location = read_Point();
 	Structure* new_structure = create_structure(name, type, location);
-	g_Model_ptr->add_structure(new_structure);
+	Model::get_Model()->add_structure(new_structure);
 }
 
 void Controller::train(View* view)
@@ -210,7 +210,7 @@ void Controller::train(View* view)
 	cin >> type;
 	Point location = read_Point();
 	Agent* new_agent = create_agent(name, type, location);
-	g_Model_ptr->add_agent(new_agent);
+	Model::get_Model()->add_agent(new_agent);
 }
 
 // agent commands
@@ -224,9 +224,9 @@ void Controller::work(Agent* agent)
 {
 	string destination_str, source_str;
 	cin >> source_str;
-	Structure* source = g_Model_ptr->get_structure_ptr(source_str);
+	Structure* source = Model::get_Model()->get_structure_ptr(source_str);
 	cin >> destination_str;
-	Structure* destination = g_Model_ptr->get_structure_ptr(destination_str);
+	Structure* destination = Model::get_Model()->get_structure_ptr(destination_str);
 	agent->start_working(source, destination);
 }
 
@@ -234,7 +234,7 @@ void Controller::attack(Agent* agent)
 {
 	string name;
 	cin >> name;
-	Agent* victim = g_Model_ptr->get_agent_ptr(name);
+	Agent* victim = Model::get_Model()->get_agent_ptr(name);
 	agent->start_attacking(victim);
 }
 

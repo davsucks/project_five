@@ -20,9 +20,6 @@ Notice how only the Standard Library headers need to be included - reduced coupl
 #include <string>
 #include <map>
 #include <list>
-// forward declare model to be able to declare g_ModeL_ptr
-struct Model;
-extern Model* g_Model_ptr;
 // other forward declarations
 struct Structure;
 struct Agent;
@@ -32,11 +29,7 @@ struct Sim_object;
  
 class Model {
 public:
-	// create the initial objects
-	Model();
-	
-	// destroy all objects
-	~Model();
+	static Model* get_Model();
 
 	// return the current time
 	int get_time() {return time;}
@@ -77,6 +70,12 @@ public:
 	void notify_gone(const std::string& name);
 	
 private:
+	// make Model a singleton by making the constructor private
+	Model();
+	~Model();
+
+	static Model* ptr;
+
 	int time;
 	
 	std::map<std::string, Sim_object*> sim_objs;

@@ -16,8 +16,8 @@ using namespace std;
 const char* const no_structure {"Structure not found!"};
 const char* const no_agent {"Agent not found!"};
 
-// default g_Model_ptr to nullptr
-Model* g_Model_ptr = nullptr;
+// default Model's instance to nullptr
+Model* Model::ptr = nullptr;
 
 void Model::insert_Agent(Agent* agent)
 {
@@ -28,6 +28,13 @@ void Model::insert_Structure(Structure* structure)
 {
 	sim_objs.insert(pair<string, Sim_object*>(structure->get_name(), structure) );
 	structure_objs.insert(pair<string, Structure*>(structure->get_name(), structure));
+}
+
+Model* Model::get_Model()
+{
+	if (!ptr)
+		ptr = new Model();
+	return ptr;
 }
 
 Model::Model()

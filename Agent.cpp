@@ -111,13 +111,13 @@ void Agent::broadcast_current_state()
 {
 	switch(health_state) {
 		case Health_State_e::ALIVE:
-			g_Model_ptr->notify_location(get_name(), moving_obj.get_current_location());
+			Model::get_Model()->notify_location(get_name(), moving_obj.get_current_location());
 			break;
 		case Health_State_e::DYING:
 		case Health_State_e::DEAD:
 		case Health_State_e::DISAPPEARING:
 		default:
-			g_Model_ptr->notify_gone(get_name());
+			Model::get_Model()->notify_gone(get_name());
 			break;
 	}
 }

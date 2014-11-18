@@ -23,5 +23,5 @@ void Structure::describe() const
 
 void Structure::broadcast_current_state()
 {
-	g_Model_ptr->notify_location(get_name(), location);
+	Model::get_Model()->notify_location(get_name(), location);
 }
