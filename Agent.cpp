@@ -132,7 +132,7 @@ void Agent::lose_health(int attack_strength)
 		broadcast_current_state();
 		moving_obj.stop_moving();
 		cout << get_name() << ": Arrggh!" << endl;
-		Model::get_Model()->remove_agent(shared_ptr<Agent>(this));
+		Model::get_Model()->remove_agent(shared_from_this());
 	} else {
 		cout << get_name() << ": Ouch!" << endl;
 	}

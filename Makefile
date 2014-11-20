@@ -19,11 +19,11 @@ TEST_OBJS += Agent_factory.o Structure_factory.o
 TEST_OBJS += Geometry.o Utility.o
 TEST_EXE = testexe
 
-
+default: CFLAGS += -gdwarf-3
 default: $(PROG)
 
 test: CFLAGS += -gdwarf-3
-test: $(TEST_EXE)
+test: $(PROG)
 
 $(PROG): $(OBJS)
 	$(LD) $(LFLAGS) $(OBJS) -o $(PROG)

@@ -16,7 +16,7 @@ it becomes dead, and finally disappearing.
 struct Structure;
 struct Point;
 
-class Agent : public Sim_object {
+class Agent : public Sim_object, public std::enable_shared_from_this<Agent> {
 public:
 
 	Agent(const std::string& name_, Point location_);

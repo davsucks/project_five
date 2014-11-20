@@ -45,8 +45,8 @@ void Soldier::update()
 		return;
 	}
 	cout << get_name() << ": Clang!" << endl;
-	shared_target->take_hit(attack_strength, shared_ptr<Agent>(this));
-	if (!shared_target->is_alive()) {
+	shared_target->take_hit(attack_strength, shared_from_this());
+	if (!shared_target || !shared_target->is_alive()) {
 		cout << get_name() << ": I triumph!" << endl;
 		attack_state = Attack_State_e::NOT_ATTACKING;
 		target.reset();

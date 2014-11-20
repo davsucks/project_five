@@ -158,7 +158,7 @@ void Controller::pan(shared_ptr<View> view)
 }
 
 // program-wide commands
-void Controller::status(shared_ptr<View> view)
+void Controller::status(shared_ptr<View>)
 {
 	Model::get_Model()->describe();
 }
@@ -168,7 +168,7 @@ void Controller::show(shared_ptr<View> view)
 	view->draw();
 }
 
-void Controller::go(shared_ptr<View> view)
+void Controller::go(shared_ptr<View>)
 {
 	Model::get_Model()->update();
 }
@@ -193,7 +193,7 @@ void check_name(string name)
 	if (too_short || not_alnum || Model::get_Model()->is_name_in_use(name))
 		throw Error(invalid_name);
 }
-void Controller::build(shared_ptr<View> view)
+void Controller::build(shared_ptr<View>)
 {
 	string name, type;
 	cin >> name;
@@ -204,7 +204,7 @@ void Controller::build(shared_ptr<View> view)
 	Model::get_Model()->add_structure(new_structure);
 }
 
-void Controller::train(shared_ptr<View> view)
+void Controller::train(shared_ptr<View>)
 {
 	string name, type;
 	cin >> name;
