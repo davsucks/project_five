@@ -18,17 +18,18 @@ const char* const no_agent {"Agent not found!"};
 // default Model's instance to nullptr
 Model* Model::ptr = nullptr;
 
-void Model::insert_Agent(Agent* agent)
+void Model::insert_Agent(shared_ptr<Agent> agent)
 {
-	sim_objs.insert(pair<string, Sim_object*>(agent->get_name(), agent) );
-	agent_objs.insert(pair<string, Agent*>(agent->get_name(), agent) );
+	sim_objs.insert(pair<string, shared_ptr<Sim_object>>(agent->get_name(), agent) );
+	agent_objs.insert(pair<string, shared_ptr<Agent>>(agent->get_name(), agent) );
 }
-void Model::insert_Structure(Structure* structure)
+void Model::insert_Structure(shared_ptr<Structure> structure)
 {
-	sim_objs.insert(pair<string, Sim_object*>(structure->get_name(), structure) );
-	structure_objs.insert(pair<string, Structure*>(structure->get_name(), structure));
+	sim_objs.insert(pair<string, shared_ptr<Sim_object>>(structure->get_name(), structure) );
+	structure_objs.insert(pair<string, shared_ptr<Structure>>(structure->get_name(), structure));
 }
 
+// should be one of the only uses of a "raw" pointer in the program
 Model* Model::get_Model()
 {
 	if (!ptr)
@@ -52,8 +53,9 @@ Model::Model()
 // destroy all objects
 Model::~Model()
 {
-	for(auto& i : sim_objs)
-		delete i.second;
+	// TODO: might not need this anymore
+	// for(auto& i : sim_objs)
+	// 	delete i.second;
 }
 
 // is name already in use for either agent or structure?
@@ -69,19 +71,17 @@ bool Model::is_structure_present(const string& name) const
 	return structure_objs.find(name) != structure_objs.end();
 }
 // add a new structure; assumes none with the same name
-void Model::add_structure(Structure* new_structure)
+void Model::add_structure(shared_ptr<Structure> new_structure)
 {
-	sim_objs.insert( pair<string, Sim_object*>(new_structure->get_name(), new_structure));
-	structure_objs.insert( pair<string, Structure*>(new_structure->get_name(), new_structure));
+	sim_objs.insert( pair<string, shared_ptr<Sim_object>>(new_structure->get_name(), new_structure));
+	structure_objs.insert( pair<string, shared_ptr<Structure>>(new_structure->get_name(), new_structure));
 	new_structure->broadcast_current_state();
 }
 
 
 // will throw Error("Structure not found!") if no structure of that name
-Structure* Model::get_structure_ptr(const string& name) const
+shared_ptr<Structure> Model::get_structure_ptr(const string& name) const
 {
-	// invariant: index into structure_objs with the first
-	// two chars of name
 	auto structure_itr = structure_objs.find(name);
 	if (structure_itr == structure_objs.end())
 		throw Error(no_structure);
@@ -95,14 +95,14 @@ bool Model::is_agent_present(const string& name) const
 	return agent_objs.find(name) != agent_objs.end();
 }
 // add a new agent; assumes none with the same name
-void Model::add_agent(Agent* new_agent)
+void Model::add_agent(shared_ptr<Agent> new_agent)
 {
-	sim_objs.insert( pair<string, Sim_object*>(new_agent->get_name(), new_agent));
-	agent_objs.insert( pair<string, Agent*>(new_agent->get_name(), new_agent));
+	sim_objs.insert( pair<string, shared_ptr<Sim_object>>(new_agent->get_name(), new_agent));
+	agent_objs.insert( pair<string, shared_ptr<Agent>>(new_agent->get_name(), new_agent));
 	new_agent->broadcast_current_state();
 }
 // will throw Error("Agent not found!") if no agent of that name
-Agent* Model::get_agent_ptr(const string& name) const
+shared_ptr<Agent> Model::get_agent_ptr(const string& name) const
 {
 	auto agent_itr = agent_objs.find(name);
 	if(agent_itr == agent_objs.end())
@@ -125,25 +125,19 @@ void Model::update()
 	// update all the Sim_objects alphabetically
 	for(auto& i : sim_objs)
 		i.second->update();
-	// collect all the Agents that are disappearing, remove them from containers
-	// and delete them in alphabetical order
-	for(auto agent_itr = agent_objs.begin(); agent_itr != agent_objs.end(); ) {
-		if(agent_itr->second->is_disappearing()) {
-			// remove from the proper containers and delete
-			string key = agent_itr->second->get_name();
-			auto temp = agent_itr++;
-			sim_objs.erase(key);
-			agent_objs.erase(key);
-			delete temp->second;
-		} else
-			++agent_itr;
-	}
+}
+
+void Model::remove_agent(shared_ptr<Agent> agent)
+{
+	// remove from sim objs and agents
+	sim_objs.erase(agent->get_name());
+	agent_objs.erase(agent->get_name());
 }
 
 /* View services */
 // Attaching a View adds it to the container and causes it to be updated
 // with all current objects'location (or other state information.
-void Model::attach(View* view)
+void Model::attach(shared_ptr<View> view)
 {
 	views.push_back(view);
 	for(auto& i : sim_objs)
@@ -151,19 +145,19 @@ void Model::attach(View* view)
 }
 // Detach the View by discarding the supplied pointer from the container of Views
 // - no updates sent to it thereafter.
-void Model::detach(View* view)
+void Model::detach(shared_ptr<View> view)
 {
 	views.remove(view);
 }
 // notify the views about an object's location
 void Model::notify_location(const string& name, Point location)
 {
-	for(View* view : views)
+	for(shared_ptr<View> view : views)
 		view->update_location(name, location);
 }
 // notify the views that an object is now gone
 void Model::notify_gone(const string& name)
 {
-	for(View* view : views)
+	for(shared_ptr<View> view : views)
 		view->update_remove(name);
 }

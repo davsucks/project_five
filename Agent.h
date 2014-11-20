@@ -9,6 +9,7 @@ it becomes dead, and finally disappearing.
 */
 #include "Sim_object.h"
 #include "Moving_object.h"
+#include <memory>
 #include <string>
 
 // forward declarations
@@ -24,9 +25,6 @@ public:
 	// return true if this agent is Alive or Disappearing
 	bool is_alive() const
 	{return health_state == Health_State_e::ALIVE;}
-	bool is_disappearing() const
-	{return health_state == Health_State_e::DISAPPEARING;}
-	
 	// return this Agent's location
 	Point get_location() const override
 	{return moving_obj.get_current_location();}
@@ -45,7 +43,7 @@ public:
 	// The attacking Agent identifies itself with its this pointer.
 	// A derived class can override this function.
 	// The function lose_health is called to handle the effect of the attack.
-	virtual void take_hit(int attack_strength, Agent *attacker_ptr);
+	virtual void take_hit(int attack_strength, std::shared_ptr<Agent> attacker_ptr);
 	
 	// update the moving state and Agent state of this object.
 	void update() override;
@@ -58,10 +56,10 @@ public:
 
 	/* Fat Interface for derived classes */
 	// Throws exception that an Agent cannot work.
-	virtual void start_working(Structure *, Structure *);
+	virtual void start_working(std::shared_ptr<Structure>, std::shared_ptr<Structure>);
 
 	// Throws exception that an Agent cannot attack.
-	virtual void start_attacking(Agent *);
+	virtual void start_attacking(std::shared_ptr<Agent>);
 
 protected:
 	
@@ -73,7 +71,7 @@ protected:
 private:
 	Moving_object moving_obj;
 
-	enum class Health_State_e { ALIVE, DYING, DEAD, DISAPPEARING };
+	enum class Health_State_e { ALIVE, DEAD };
 	Health_State_e health_state;
 
 	int health;

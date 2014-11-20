@@ -42,29 +42,32 @@ public:
 	// is there a structure with this name?
 	bool is_structure_present(const std::string& name) const;
 	// add a new structure; assumes none with the same name
-	void add_structure(Structure*);
+	void add_structure(std::shared_ptr<Structure>);
 	// will throw Error("Structure not found!") if no structure of that name
-	Structure* get_structure_ptr(const std::string& name) const;
+	std::shared_ptr<Structure> get_structure_ptr(const std::string& name) const;
 
 	// is there an agent with this name?
 	bool is_agent_present(const std::string& name) const;
 	// add a new agent; assumes none with the same name
-	void add_agent(Agent*);
+	void add_agent(std::shared_ptr<Agent>);
 	// will throw Error("Agent not found!") if no agent of that name
-	Agent* get_agent_ptr(const std::string& name) const;
+	std::shared_ptr<Agent> get_agent_ptr(const std::string& name) const;
 	
 	// tell all objects to describe themselves to the console
 	void describe() const;
 	// increment the time, and tell all objects to update themselves
-	void update();	
+	void update();
+
+	// removes the agent from the appropriate containers
+	void remove_agent(std::shared_ptr<Agent>);
 	
 	/* View services */
 	// Attaching a View adds it to the container and causes it to be updated
     // with all current objects'location (or other state information.
-	void attach(View*);
+	void attach(std::shared_ptr<View>);
 	// Detach the View by discarding the supplied pointer from the container of Views
     // - no updates sent to it thereafter.
-	void detach(View*);
+	void detach(std::shared_ptr<View>);
     // notify the views about an object's location
 	void notify_location(const std::string& name, Point location);
 	// notify the views that an object is now gone
@@ -79,15 +82,15 @@ private:
 
 	int time;
 	
-	std::map<std::string, Sim_object*> sim_objs;
-	std::map<std::string, Structure*> structure_objs;
-	std::map<std::string, Agent*> agent_objs;
+	std::map<std::string, std::shared_ptr<Sim_object> > sim_objs;
+	std::map<std::string, std::shared_ptr<Structure> > structure_objs;
+	std::map<std::string, std::shared_ptr<Agent> > agent_objs;
 
 	// used by models constructor
-	void insert_Agent(Agent*);
-	void insert_Structure(Structure*);
+	void insert_Agent(std::shared_ptr<Agent>);
+	void insert_Structure(std::shared_ptr<Structure>);
 
-	std::list<View*> views;
+	std::list<std::shared_ptr<View> > views;
 
 	// disallow copy/move construction or assignment
 	Model(const Model&) = delete;

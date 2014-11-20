@@ -10,13 +10,15 @@
 #include <map>
 #include <locale>
 #include <algorithm>
+#include <cassert>
 using namespace std;
 
 // types for the command map
-using CommandFunction = void (Controller::*)(View*);
+// TODO: review proj3 feedback and see what kieras said about this
+using CommandFunction = void (Controller::*)(shared_ptr<View>);
 using Command_Map_t = map<string, CommandFunction>;
 
-using AgentCommand = void (Controller::*)(Agent*);
+using AgentCommand = void (Controller::*)(shared_ptr<Agent>);
 using Agent_Command_Map_t = map<string, AgentCommand>;
 
 
@@ -38,7 +40,7 @@ void clear_and_skip_line()
 
 void Controller::run()
 {
-	View* view = new View;
+	shared_ptr<View> view(new View);
 	Model::get_Model()->attach(view);
 
 	Command_Map_t command_map;
@@ -71,15 +73,15 @@ void Controller::run()
 		cout << "\nTime " << Model::get_Model()->get_time() << ": Enter command: ";
 		cin >> first_word;
 		if (first_word == "quit") {
-			delete view;
+			// TODO: shouldn't need this, shared_ptrs yo
+			// delete view;
 			cout << "Done" << endl;
 			return;
 		}
 		// test if word is name of an agent
 		if (Model::get_Model()->is_agent_present(first_word)) {
-			Agent* agent = Model::get_Model()->get_agent_ptr(first_word);
-			if (!agent->is_alive())
-				throw Error(dead_agent);
+			shared_ptr<Agent> agent = Model::get_Model()->get_agent_ptr(first_word);
+			assert(agent->is_alive());
 			string cmd_name;
 			cin >> cmd_name;
 			// find command from appropriate command map
@@ -113,7 +115,7 @@ void Controller::run()
 
 // command functions by category
 // view:
-void Controller::default_fn(View* view)
+void Controller::default_fn(shared_ptr<View> view)
 {
 	view->set_defaults();
 }
@@ -125,7 +127,7 @@ void check_cin(string message)
 		throw Error(message);
 	}
 }
-void Controller::size(View* view)
+void Controller::size(shared_ptr<View> view)
 {
 	int size;
 	cin >> size;
@@ -133,7 +135,7 @@ void Controller::size(View* view)
 	view->set_size(size);
 }
 
-void Controller::zoom(View* view)
+void Controller::zoom(shared_ptr<View> view)
 {
 	double scale;
 	cin >> scale;
@@ -150,23 +152,23 @@ Point read_Point()
 	check_cin(expected_double);
 	return Point(x, y);
 }
-void Controller::pan(View* view)
+void Controller::pan(shared_ptr<View> view)
 {
 	view->set_origin(read_Point());
 }
 
 // program-wide commands
-void Controller::status(View* view)
+void Controller::status(shared_ptr<View> view)
 {
 	Model::get_Model()->describe();
 }
 
-void Controller::show(View* view)
+void Controller::show(shared_ptr<View> view)
 {
 	view->draw();
 }
 
-void Controller::go(View* view)
+void Controller::go(shared_ptr<View> view)
 {
 	Model::get_Model()->update();
 }
@@ -191,54 +193,54 @@ void check_name(string name)
 	if (too_short || not_alnum || Model::get_Model()->is_name_in_use(name))
 		throw Error(invalid_name);
 }
-void Controller::build(View* view)
+void Controller::build(shared_ptr<View> view)
 {
 	string name, type;
 	cin >> name;
 	check_name(name);
 	cin >> type;
 	Point location = read_Point();
-	Structure* new_structure = create_structure(name, type, location);
+	shared_ptr<Structure> new_structure = create_structure(name, type, location);
 	Model::get_Model()->add_structure(new_structure);
 }
 
-void Controller::train(View* view)
+void Controller::train(shared_ptr<View> view)
 {
 	string name, type;
 	cin >> name;
 	check_name(name);
 	cin >> type;
 	Point location = read_Point();
-	Agent* new_agent = create_agent(name, type, location);
+	shared_ptr<Agent> new_agent = create_agent(name, type, location);
 	Model::get_Model()->add_agent(new_agent);
 }
 
 // agent commands
-void Controller::move(Agent* agent)
+void Controller::move(shared_ptr<Agent> agent)
 {
 	Point location = read_Point();
 	agent->move_to(location);
 }
 
-void Controller::work(Agent* agent)
+void Controller::work(shared_ptr<Agent> agent)
 {
 	string destination_str, source_str;
 	cin >> source_str;
-	Structure* source = Model::get_Model()->get_structure_ptr(source_str);
+	shared_ptr<Structure> source = Model::get_Model()->get_structure_ptr(source_str);
 	cin >> destination_str;
-	Structure* destination = Model::get_Model()->get_structure_ptr(destination_str);
+	shared_ptr<Structure> destination = Model::get_Model()->get_structure_ptr(destination_str);
 	agent->start_working(source, destination);
 }
 
-void Controller::attack(Agent* agent)
+void Controller::attack(shared_ptr<Agent> agent)
 {
 	string name;
 	cin >> name;
-	Agent* victim = Model::get_Model()->get_agent_ptr(name);
+	shared_ptr<Agent> victim = Model::get_Model()->get_agent_ptr(name);
 	agent->start_attacking(victim);
 }
 
-void Controller::stop(Agent* agent)
+void Controller::stop(shared_ptr<Agent> agent)
 {
 	agent->stop();
 }

@@ -28,7 +28,7 @@ public:
 
 	// starts the working process
 	// Throws an exception if the source is the same as the destination.
-	void start_working(Structure * source_, Structure * destination_) override;
+	void start_working(std::shared_ptr<Structure> source_, std::shared_ptr<Structure> destination_) override;
 
 	// output information about the current state
 	void describe() const override;
@@ -41,8 +41,8 @@ private:
 	void stop_working();
 
 	double amount;
-	Structure* source;
-	Structure* destination;
+	std::shared_ptr<Structure> source;
+	std::shared_ptr<Structure> destination;
 };
 
 #endif

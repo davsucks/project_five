@@ -84,7 +84,8 @@ void Peasant::stop_working()
 			working_state = Working_State_e::NOT_WORKING;
 			// note: break intentionally left out
 		case Working_State_e::NOT_WORKING:
-			source = destination = nullptr;
+			source.reset();
+			destination.reset();
 			break;
 	}
 }
@@ -108,11 +109,12 @@ void Peasant::stop()
 
 // starts the working process
 // Throws an exception if the source is the same as the destination.
-void Peasant::start_working(Structure * source_, Structure * destination_)
+void Peasant::start_working(shared_ptr<Structure> source_, shared_ptr<Structure> destination_)
 {
 	Agent::stop();
 	working_state = Working_State_e::NOT_WORKING;
-	source = destination = nullptr;
+	source.reset();
+	destination.reset();
 	// error check
 	if (source_ == destination_)
 		throw Error(get_name() + ": I can't move food to and from the same place!");

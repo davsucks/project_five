@@ -5,7 +5,7 @@ using namespace std;
 Town_Hall::Town_Hall(const string& name_, Point location_)
 :
 Structure(name_, location_),
-amount{0}
+amount {0}
 {
 	cout << "Town_Hall " << name_ << " constructed" << endl;
 }

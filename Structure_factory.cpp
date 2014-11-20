@@ -7,17 +7,15 @@ using namespace std;
 
 const char* const unknown_type {"Trying to create structure of unknown type!"};
 
-Structure* create_structure(const string& name, const string& type, Point location)
+shared_ptr<Structure> create_structure(const string& name, const string& type, Point location)
 {
 	if (type == "Farm") {
 		// make Farm
-		return new Farm(name, location);
+		return shared_ptr<Structure>(new Farm(name, location));
 	} else if (type == "Town_Hall") {
-		return new Town_Hall(name, location);
+		return shared_ptr<Structure>(new Town_Hall(name, location));
 		// make Town_Hall
 	} else {
 		throw Error(unknown_type);
 	}
 }
-
-
