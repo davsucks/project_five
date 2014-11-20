@@ -9,8 +9,8 @@ static const int max_food {35};
 Peasant::Peasant(const string& name_, Point location_)
 :
 Agent(name_, location_),
-working_state{Working_State_e::NOT_WORKING},
-amount{0}
+working_state {Working_State_e::NOT_WORKING},
+amount {0}
 {
 	cout << "Peasant " << name_ << " constructed" << endl;
 }

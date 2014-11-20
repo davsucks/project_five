@@ -1,13 +1,10 @@
 #include "View.h"
-#include "Geometry.h"
 #include "Utility.h"
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
 #include <iterator>
 #include <sstream>
-#include <string>
-#include <vector>
 using namespace std;
 
 // error message constants

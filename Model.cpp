@@ -7,7 +7,6 @@
 #include "Structure_factory.h"
 #include "Geometry.h"
 #include "Utility.h"
-#include <string>
 #include <iostream>
 #include <algorithm>
 using namespace std;

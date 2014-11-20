@@ -20,6 +20,7 @@ Notice how only the Standard Library headers need to be included - reduced coupl
 #include <string>
 #include <map>
 #include <list>
+#include <memory>
 // other forward declarations
 struct Structure;
 struct Agent;
