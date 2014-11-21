@@ -3,7 +3,7 @@ LD = g++
 CFLAGS = -c -g -std=c++11 -pedantic-errors -Wall
 LFLAGS = -g
 
-OBJS = p5_main.o Model.o View.o Controller.o 
+OBJS = p5_main.o Model.o View.o Views.o Controller.o 
 OBJS += Sim_object.o Structure.o Moving_object.o Agent.o
 OBJS += Farm.o Town_Hall.o
 OBJS += Peasant.o Soldier.o
@@ -11,7 +11,7 @@ OBJS += Agent_factory.o Structure_factory.o
 OBJS += Geometry.o Utility.o
 PROG = proj5exe
 
-TEST_OBJS = Test.o Model.o View.o Controller.o
+TEST_OBJS = Test.o Model.o View.o Views.o Controller.o
 TEST_OBJS += Sim_object.o Structure.o Moving_object.o Agent.o
 TEST_OBJS += Farm.o Town_Hall.o
 TEST_OBJS += Peasant.o Soldier.o
@@ -43,7 +43,10 @@ Model.o: Model.cpp Model.h View.h Sim_object.h Structure.h Agent.h Agent_factory
 View.o: View.cpp View.h Geometry.h Utility.h
 	$(CC) $(CFLAGS) View.cpp
 
-Controller.o: Controller.cpp Controller.h Model.h View.h Sim_object.h Structure.h Agent.h Agent_factory.h Structure_factory.h Geometry.h Utility.h
+Views.o: Views.cpp Views.h Geometry.h Utility.h
+	$(CC) $(CFLAGS) Views.cpp
+
+Controller.o: Controller.cpp Controller.h Model.h View.h Views.h Sim_object.h Structure.h Agent.h Agent_factory.h Structure_factory.h Geometry.h Utility.h
 	$(CC) $(CFLAGS) Controller.cpp
 
 Sim_object.o: Sim_object.cpp Sim_object.h Geometry.h

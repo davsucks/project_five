@@ -155,6 +155,21 @@ void Model::notify_location(const string& name, Point location)
 	for(shared_ptr<View> view : views)
 		view->update_location(name, location);
 }
+
+// TODO: i'll probably need this
+/*
+void Model::notify_amounts(const string& name, double amount)
+{
+	for(shared_ptr<View> view : views)
+		view->update_location(name, amount);
+}
+
+void Model::notify_health(const string& name, double health)
+{
+	for(shared_ptr<View> view : views)
+		view->update_location(name, amount);
+}
+*/
 // notify the views that an object is now gone
 void Model::notify_gone(const string& name)
 {

@@ -15,7 +15,7 @@ using namespace std;
 
 // types for the command map
 // TODO: review proj3 feedback and see what kieras said about this
-using CommandFunction = void (Controller::*)(shared_ptr<View>);
+using CommandFunction = void (Controller::*)();
 using Command_Map_t = map<string, CommandFunction>;
 
 using AgentCommand = void (Controller::*)(shared_ptr<Agent>);
@@ -40,8 +40,6 @@ void clear_and_skip_line()
 
 void Controller::run()
 {
-	shared_ptr<View> view(new View);
-	Model::get_Model()->attach(view);
 
 	Command_Map_t command_map;
 	Agent_Command_Map_t agent_command_map;
@@ -99,7 +97,7 @@ void Controller::run()
 			if(cmd_fn == command_map.end())
 				throw Error(unrecognized_cmd);
 			auto mem = cmd_fn->second;
-			(this->*mem)(view);			
+			(this->*mem)();
 		}
 		}
 		// end of try block
@@ -115,9 +113,9 @@ void Controller::run()
 
 // command functions by category
 // view:
-void Controller::default_fn(shared_ptr<View> view)
+void Controller::default_fn()
 {
-	view->set_defaults();
+	// view->set_defaults();
 }
 
 // checks that cin is valid, if not, throws an error containing message
@@ -127,20 +125,20 @@ void check_cin(string message)
 		throw Error(message);
 	}
 }
-void Controller::size(shared_ptr<View> view)
+void Controller::size()
 {
 	int size;
 	cin >> size;
 	check_cin(expected_int);
-	view->set_size(size);
+	// view->set_size(size);
 }
 
-void Controller::zoom(shared_ptr<View> view)
+void Controller::zoom()
 {
 	double scale;
 	cin >> scale;
 	check_cin(expected_double);
-	view->set_scale(scale);
+	// view->set_scale(scale);
 }
 
 Point read_Point()
@@ -152,23 +150,23 @@ Point read_Point()
 	check_cin(expected_double);
 	return Point(x, y);
 }
-void Controller::pan(shared_ptr<View> view)
+void Controller::pan()
 {
-	view->set_origin(read_Point());
+	// view->set_origin(read_Point());
 }
 
 // program-wide commands
-void Controller::status(shared_ptr<View>)
+void Controller::status()
 {
 	Model::get_Model()->describe();
 }
 
-void Controller::show(shared_ptr<View> view)
+void Controller::show()
 {
-	view->draw();
+	// view->draw();
 }
 
-void Controller::go(shared_ptr<View>)
+void Controller::go()
 {
 	Model::get_Model()->update();
 }
@@ -193,7 +191,7 @@ void check_name(string name)
 	if (too_short || not_alnum || Model::get_Model()->is_name_in_use(name))
 		throw Error(invalid_name);
 }
-void Controller::build(shared_ptr<View>)
+void Controller::build()
 {
 	string name, type;
 	cin >> name;
@@ -204,7 +202,7 @@ void Controller::build(shared_ptr<View>)
 	Model::get_Model()->add_structure(new_structure);
 }
 
-void Controller::train(shared_ptr<View>)
+void Controller::train()
 {
 	string name, type;
 	cin >> name;

@@ -1,5 +1,4 @@
 #include "Farm.h"
-// TODO: not sure if i should #include geoemtry.h
 #include <iostream>
 using namespace std;
 

@@ -70,6 +70,8 @@ public:
 	void detach(std::shared_ptr<View>);
     // notify the views about an object's location
 	void notify_location(const std::string& name, Point location);
+	// notify the views about an object's amount
+	void notify_amount(const std::string& name, double amount);
 	// notify the views that an object is now gone
 	void notify_gone(const std::string& name);
 	

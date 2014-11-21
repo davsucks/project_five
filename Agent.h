@@ -65,7 +65,7 @@ protected:
 	
 
 	// calculate loss of health due to hit.
-	// if health decreases to zero or negative, Agent state becomes Dying, and any movement is stopped.
+	// if health decreases to zero or negative, Agent state becomes Dead, and any movement is stopped.
 	void lose_health(int attack_strength);
 
 private:
