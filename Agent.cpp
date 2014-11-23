@@ -100,6 +100,7 @@ void Agent::broadcast_current_state()
 	switch(health_state) {
 		case Health_State_e::ALIVE:
 			Model::get_Model()->notify_location(get_name(), moving_obj.get_current_location());
+			Model::get_Model()->notify_health(get_name(), health);
 			break;
 		case Health_State_e::DEAD:
 		default:
@@ -133,7 +134,10 @@ void Agent::lose_health(int attack_strength)
 		moving_obj.stop_moving();
 		cout << get_name() << ": Arrggh!" << endl;
 		Model::get_Model()->remove_agent(shared_from_this());
+		// TODO: pretty sure this is right
+		Model::get_Model()->notify_gone(get_name());
 	} else {
+		Model::get_Model()->notify_health(get_name(), health);
 		cout << get_name() << ": Ouch!" << endl;
 	}
 }

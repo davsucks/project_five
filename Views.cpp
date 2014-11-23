@@ -129,7 +129,8 @@ name {name_},
 size {def_local_size_c}, 
 scale {def_local_scale_c},
 origin(calculate_origin(location))
-{ }
+{
+}
 
 void Local::draw()
 {
@@ -155,13 +156,15 @@ void Local::update_location(const string& name, Point location)
 	// first update the location stored in the parents object list
 	Grid::update_location(name, location);
 	// now update our own origin
-	origin = calculate_origin(location);
+	// if our guy has changed, update the origin
+	if (name == Local::name)
+		origin = calculate_origin(location);
 }
 
 Point Local::calculate_origin(Point location)
 {
-	double x = origin.x - (size / 2.0) * scale;
-	double y = origin.y - (size / 2.0) * scale;
+	double x = location.x - (size / 2.0) * scale;
+	double y = location.y - (size / 2.0) * scale;
 	return Point(x, y);
 }
 
@@ -266,6 +269,7 @@ void Values::draw()
 	cout << "--------------" << endl;
 	for(auto& itr : stored_values)
 		cout << itr.first << ": " << itr.second << endl;
+	cout << "--------------" << endl;
 }
 // tell value to "forget" its data
 void Values::clear()
@@ -291,6 +295,7 @@ void Values::update_value(const std::string& name, double value)
 void Health::draw()
 {
 	cout << "Current " << "Health" << ":" << endl;
+	Values::draw();
 }
 // update the amount of health
 void Health::update_health(const std::string& name, double health)
@@ -306,6 +311,7 @@ void Health::update_health(const std::string& name, double health)
 void Amounts::draw()
 {
 	cout << "Current " << "Amounts" << ":" << endl;
+	Values::draw();
 }
 // update the amount
 void Amounts::update_amount(const std::string& name, double amount)

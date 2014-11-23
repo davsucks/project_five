@@ -137,42 +137,60 @@ void Model::remove_agent(shared_ptr<Agent> agent)
 /* View services */
 // Attaching a View adds it to the container and causes it to be updated
 // with all current objects'location (or other state information.
-void Model::attach(shared_ptr<View> view)
+void Model::attach(string view_name, shared_ptr<View> view)
 {
-	views.push_back(view);
+	views.push_back(make_pair(view_name, view));
 	for(auto& i : sim_objs)
 		i.second->broadcast_current_state();
 }
 // Detach the View by discarding the supplied pointer from the container of Views
 // - no updates sent to it thereafter.
-void Model::detach(shared_ptr<View> view)
+void Model::detach(string view_name)
 {
-	views.remove(view);
+	for(auto itr = views.begin(); itr != views.end(); ++itr) {
+		if (itr->first == view_name) {
+			views.erase(itr);
+			return;
+		}
+	}
 }
 // notify the views about an object's location
 void Model::notify_location(const string& name, Point location)
 {
-	for(shared_ptr<View> view : views)
-		view->update_location(name, location);
+	for(auto& i : views)
+		i.second->update_location(name, location);
 }
-
-// TODO: i'll probably need this
-/*
-void Model::notify_amounts(const string& name, double amount)
+// notify views about an objects amounts
+void Model::notify_amount(const string& name, double amount)
 {
-	for(shared_ptr<View> view : views)
-		view->update_location(name, amount);
+	for(auto& i : views)
+		i.second->update_amount(name, amount);
 }
-
+// notify the views about an objects health
 void Model::notify_health(const string& name, double health)
 {
-	for(shared_ptr<View> view : views)
-		view->update_location(name, amount);
+	for(auto & i : views)
+		i.second->update_health(name, health);
 }
-*/
+
 // notify the views that an object is now gone
 void Model::notify_gone(const string& name)
 {
-	for(shared_ptr<View> view : views)
-		view->update_remove(name);
+	for(auto& i : views)
+		i.second->update_remove(name);
+}
+
+void Model::draw_all_views()
+{
+	for(auto& i : views)
+		i.second->draw();
+}
+
+shared_ptr<View> Model::get_view(const string& view_name)
+{
+	for(auto& i : views) {
+		if(i.first == view_name)
+			return i.second;
+	}
+	return shared_ptr<View>();
 }

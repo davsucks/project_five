@@ -1,6 +1,8 @@
 #include "Peasant.h"
 #include "Structure.h"
 #include "Utility.h"
+// TODO: pretty sure peasant needs to include model here
+#include "Model.h"
 #include <iostream>
 using namespace std;
 
@@ -43,6 +45,7 @@ void Peasant::update()
 			double request = max_food - amount;
 			double received = source->withdraw(request);
 			amount += received;
+			Model::get_Model()->notify_amount(get_name(), amount);
 
 			if (received > 0.0) {
 				cout << get_name() << ": Collected " << received << endl;
@@ -63,6 +66,7 @@ void Peasant::update()
 			destination->deposit(amount);
 			cout << get_name() << ": Deposited " << amount << endl;
 			amount = 0;
+			Model::get_Model()->notify_amount(get_name(), amount);
 			Agent::move_to(source->get_location());
 			working_state = Working_State_e::INBOUND;
 			break;
@@ -163,4 +167,10 @@ void Peasant::describe() const
 		default:
 			break;
 	}
+}
+
+void Peasant::broadcast_current_state()
+{
+	Model::get_Model()->notify_amount(get_name(), amount);
+	Agent::broadcast_current_state();
 }

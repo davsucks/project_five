@@ -6,6 +6,7 @@ with the user.
 */
 
 #include <memory>
+#include <map>
 
 // forward declarations
 struct View;
@@ -42,6 +43,14 @@ private:
 	void work(std::shared_ptr<Agent>);
 	void attack(std::shared_ptr<Agent>);
 	void stop(std::shared_ptr<Agent>);
+
+	// view factory
+	std::shared_ptr<View> create_view(const std::string& name);
+	// queries views_in_use to see if the view is currently open
+	void check_if_open(const std::string& name, const std::string& error_msg);
+	// TODO: refactor this maybe?
+	void check_if_not_open(const std::string& name, const std::string& error_msg);
+	std::map<std::string, bool> views_in_use;
 };
 
 #endif

@@ -32,6 +32,8 @@ public:
 
 	// output information about the current state
 	void describe() const override;
+	// override to allow peasant to tell views amount the amount its carryin
+	void broadcast_current_state() override;
 private:
 	enum class Working_State_e { INBOUND, COLLECTING, OUTBOUND, DEPOSITING, NOT_WORKING };
 	Working_State_e working_state;

@@ -1,6 +1,7 @@
 #include "Controller.h"
 #include "Model.h"
 #include "View.h"
+#include "Views.h"
 #include "Structure.h"
 #include "Utility.h"
 #include "Structure_factory.h"
@@ -28,6 +29,11 @@ const char* const expected_double {"Expected a double!"};
 const char* const unrecognized_cmd {"Unrecognized command!"};
 const char* const invalid_name {"Invalid name for new object!"};
 const char* const dead_agent {"Agent is not alive!"};
+const char* const view_already_exists {"View of that name already open!"};
+const char* const no_object_of_name {"No object of that name!"};
+const char* const no_view {"No view of that name is open!"};
+const char* const map_str {"map"};
+const char* const no_map {"No map view is open!"};
 
 Controller::Controller()
 {}
@@ -57,6 +63,10 @@ void Controller::run()
 	command_map["go"] = &Controller::go;
 	command_map["build"] = &Controller::build;
 	command_map["train"] = &Controller::train;
+
+	// new p5 commands
+	command_map["open"] = &Controller::open;
+	command_map["close"] = &Controller::close;
 
 	// agent commands
 	agent_command_map["move"] = &Controller::move;
@@ -111,11 +121,68 @@ void Controller::run()
 	}
 }
 
+// View factory
+shared_ptr<View> Controller::create_view(const string& name)
+{
+	if (name == "map") {
+		return shared_ptr<View>(new Map);
+	} else if (name == "health") {
+		return shared_ptr<View>(new Health);
+	} else if (name == "amounts") {
+		return shared_ptr<View>(new Amounts);
+	} else {
+		// local view for agent
+		if (!Model::get_Model()->is_name_in_use(name))
+			throw Error(no_object_of_name);
+		if (Model::get_Model()->is_agent_present(name)) {
+			shared_ptr<Agent> agent = Model::get_Model()->get_agent_ptr(name);
+			return shared_ptr<View>(new Local(agent->get_location(), name));
+		} else {
+			shared_ptr<Structure> structure = Model::get_Model()->get_structure_ptr(name);
+			return shared_ptr<View>(new Local(structure->get_location(), name));
+		}
+	}
+}
+// TODO: order all these functions
+// checks to see if the view is already open, throws an error if so
+void Controller::check_if_open(const string& name, const string& error_msg)
+{
+	if (views_in_use[name])
+		throw Error(error_msg);
+}
+
+void Controller::check_if_not_open(const string& name, const string& error_msg)
+{
+	if (!views_in_use[name])
+		throw Error(error_msg);
+}
+
 // command functions by category
 // view:
+void Controller::open()
+{
+	string view_name;
+	cin >> view_name;
+	check_if_open(view_name, view_already_exists);
+	shared_ptr<View> new_view = create_view(view_name);
+	views_in_use[view_name] = true;
+	Model::get_Model()->attach(view_name, new_view);
+}
+
+void Controller::close()
+{
+	string view_name;
+	cin >> view_name;
+	check_if_not_open(view_name, no_view);
+	views_in_use[view_name] = false;
+	Model::get_Model()->detach(view_name);
+}
+
 void Controller::default_fn()
 {
-	// view->set_defaults();
+	check_if_not_open(map_str, no_map);
+	shared_ptr<View> view = Model::get_Model()->get_view(map_str);
+	view->set_defaults();
 }
 
 // checks that cin is valid, if not, throws an error containing message
@@ -127,18 +194,22 @@ void check_cin(string message)
 }
 void Controller::size()
 {
+	check_if_not_open(map_str, no_map);
 	int size;
 	cin >> size;
 	check_cin(expected_int);
-	// view->set_size(size);
+	shared_ptr<View> view = Model::get_Model()->get_view(map_str);
+	view->set_size(size);
 }
 
 void Controller::zoom()
 {
+	check_if_not_open(map_str, no_map);
 	double scale;
 	cin >> scale;
 	check_cin(expected_double);
-	// view->set_scale(scale);
+	shared_ptr<View> view = Model::get_Model()->get_view(map_str);
+	view->set_scale(scale);
 }
 
 Point read_Point()
@@ -152,7 +223,9 @@ Point read_Point()
 }
 void Controller::pan()
 {
-	// view->set_origin(read_Point());
+	check_if_not_open(map_str, no_map);
+	shared_ptr<View> view = Model::get_Model()->get_view(map_str);
+	view->set_origin(read_Point());
 }
 
 // program-wide commands
@@ -163,7 +236,7 @@ void Controller::status()
 
 void Controller::show()
 {
-	// view->draw();
+	Model::get_Model()->draw_all_views();
 }
 
 void Controller::go()

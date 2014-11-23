@@ -23,6 +23,9 @@ public:
 
 	// output information about the current state
 	void describe() const override;
+
+	void broadcast_current_state() override;
+	
 private:
 	double amount;
 	double production_rate;

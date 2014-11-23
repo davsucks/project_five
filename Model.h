@@ -21,6 +21,7 @@ Notice how only the Standard Library headers need to be included - reduced coupl
 #include <map>
 #include <list>
 #include <memory>
+#include <utility>
 // other forward declarations
 struct Structure;
 struct Agent;
@@ -64,16 +65,22 @@ public:
 	/* View services */
 	// Attaching a View adds it to the container and causes it to be updated
     // with all current objects'location (or other state information.
-	void attach(std::shared_ptr<View>);
+	void attach(std::string view_name, std::shared_ptr<View>);
 	// Detach the View by discarding the supplied pointer from the container of Views
     // - no updates sent to it thereafter.
-	void detach(std::shared_ptr<View>);
+	void detach(std::string view_name);
     // notify the views about an object's location
 	void notify_location(const std::string& name, Point location);
 	// notify the views about an object's amount
 	void notify_amount(const std::string& name, double amount);
+	// notify the views about an object's health
+	void notify_health(const std::string& name, double health);
 	// notify the views that an object is now gone
 	void notify_gone(const std::string& name);
+	// tells all the views in views to draw themselves
+	void draw_all_views();
+	// returns a shared pointer to the named view
+	std::shared_ptr<View> get_view(const std::string& view_name);
 	
 private:
 	// make Model a singleton by making the constructor private
@@ -92,7 +99,8 @@ private:
 	void insert_Agent(std::shared_ptr<Agent>);
 	void insert_Structure(std::shared_ptr<Structure>);
 
-	std::list<std::shared_ptr<View> > views;
+	// the list of views will store a pair corresponding to the views name, and the view
+	std::list< std::pair<std::string, std::shared_ptr<View> > > views;
 
 	// disallow copy/move construction or assignment
 	Model(const Model&) = delete;
