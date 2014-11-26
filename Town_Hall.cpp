@@ -7,14 +7,10 @@ Town_Hall::Town_Hall(const string& name_, Point location_)
 :
 Structure(name_, location_),
 amount {0}
-{
-	cout << "Town_Hall " << name_ << " constructed" << endl;
-}
+{ }
 
 Town_Hall::~Town_Hall()
-{
-	cout << "Town_Hall " << get_name() << " destructed" << endl;	
-}
+{ }
 
 void Town_Hall::deposit(double deposit_amount)
 {

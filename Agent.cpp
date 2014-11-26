@@ -14,14 +14,7 @@ Sim_object(name_),
 moving_obj(location_, initial_speed_c),
 health_state{Health_State_e::ALIVE},
 health{initial_health_c}
-{
-	cout << "Agent " << name_ << " constructed" << endl;
-}
-
-Agent::~Agent()
-{
-	cout << "Agent " << get_name() << " destructed" << endl;
-}
+{ }
 
 // tell this Agent to start moving to location destination_
 void Agent::move_to(Point destination_)

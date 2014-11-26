@@ -48,6 +48,7 @@ Model::Model()
 	insert_Agent(create_agent("Merry", "Peasant", Point(0., 25.)));
 	insert_Agent(create_agent("Zug", "Soldier", Point(20., 30.)));
 	insert_Agent(create_agent("Bug", "Soldier", Point(15., 20.)));
+	insert_Agent(create_agent("Iriel", "Archer", Point(20., 38.)));
 }
 
 // destroy all objects
@@ -193,4 +194,42 @@ shared_ptr<View> Model::get_view(const string& view_name)
 			return i.second;
 	}
 	return shared_ptr<View>();
+}
+
+// function object to compare distances between two Agents and the saved agent
+class CompSimObjDistance {
+public:
+	CompSimObjDistance(shared_ptr<Agent> current_agent_)
+	: current_agent(current_agent_)
+	{}
+
+	bool operator() (pair<string, shared_ptr<Sim_object> > lhs, pair<string, shared_ptr<Sim_object> > rhs)
+	{
+		if (current_agent == lhs.second) {
+			// don't want to attack ourselves
+			return false;
+		} else if (current_agent == rhs.second) {
+			return true;
+		}
+		// calculate the distance between the current location and two different points
+		double lhs_distance = cartesian_distance(current_agent->get_location(), lhs.second->get_location());
+		double rhs_distance = cartesian_distance(current_agent->get_location(), rhs.second->get_location());
+		return lhs_distance < rhs_distance;
+	}
+private:
+	shared_ptr<Agent> current_agent;
+};
+
+// returns a shared_ptr to the closest agent to location
+shared_ptr<Agent> Model::get_closest_agent(shared_ptr<Agent> current_agent)
+{
+	// in case of a tie, min_element will return the first of the two objects
+	// luckily, agent_objs and structure_objs are kept in alphabetical order
+	return min_element(agent_objs.begin(), agent_objs.end(), CompSimObjDistance(current_agent))->second;
+}
+
+// returns a shared_ptr to the closes structure to location
+shared_ptr<Structure> Model::get_closest_structure(shared_ptr<Agent> current_agent)
+{
+	return min_element(structure_objs.begin(), structure_objs.end(), CompSimObjDistance(current_agent))->second;
 }

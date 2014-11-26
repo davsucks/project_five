@@ -5,10 +5,11 @@ A Town_Hall is a structure that provides for depositing and withdrawing food,
 but does no updating.
 */
 #include "Structure.h"
+#include <string>
 // TODO: not sure if i need to include <string> here since its included in structure.h
 class Town_Hall : public Structure {
 public:
-	Town_Hall (const std::string& name_, Point location_);
+	Town_Hall(const std::string& name_, Point location_);
 	~Town_Hall();
 	
 	// deposit adds in the supplied amount

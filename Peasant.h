@@ -15,8 +15,6 @@ class Peasant : public Agent {
 public:
 	Peasant(const std::string& name_, Point location_);
 
-	~Peasant();
-
 	// implement Peasant behavior
 	void update() override;
 	

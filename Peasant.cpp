@@ -1,7 +1,6 @@
 #include "Peasant.h"
 #include "Structure.h"
 #include "Utility.h"
-// TODO: pretty sure peasant needs to include model here
 #include "Model.h"
 #include <iostream>
 using namespace std;
@@ -13,14 +12,7 @@ Peasant::Peasant(const string& name_, Point location_)
 Agent(name_, location_),
 working_state {Working_State_e::NOT_WORKING},
 amount {0}
-{
-	cout << "Peasant " << name_ << " constructed" << endl;
-}
-
-Peasant::~Peasant()
-{
-	cout << "Peasant " << get_name() << " destructed" << endl;
-}
+{ }
 
 // implement Peasant behavior
 void Peasant::update()

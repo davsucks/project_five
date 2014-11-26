@@ -7,13 +7,10 @@ Structure::Structure(std::string name_, Point location_)
 :
 Sim_object(name_),
 location(location_.x, location_.y)
-{
-		cout << "Structure " << name_ << " constructed" << endl;
-}
+{ }
+
 Structure::~Structure()
-{
-	cout << "Structure " << get_name() << " destructed" << endl;
-}
+{ }
 
 void Structure::describe() const
 {

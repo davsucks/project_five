@@ -81,6 +81,11 @@ public:
 	void draw_all_views();
 	// returns a shared pointer to the named view
 	std::shared_ptr<View> get_view(const std::string& view_name);
+
+	// returns a weak_ptr to the closest agent to location
+	std::shared_ptr<Agent> get_closest_agent(std::shared_ptr<Agent> current_agent);
+	// returns a weak_ptr to the closes structure to location
+	std::shared_ptr<Structure> get_closest_structure(std::shared_ptr<Agent> current_agent);
 	
 private:
 	// make Model a singleton by making the constructor private

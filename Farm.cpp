@@ -12,14 +12,10 @@ Farm::Farm(const string& name_, Point location_)
 Structure(name_, location_),
 amount {def_amount_c},
 production_rate {def_prod_rate_c}
-{
-	cout << "Farm " << name_ << " constructed" << endl;
-}
+{ }
 
 Farm::~Farm()
-{
-	cout << "Farm " << get_name() << " destructed" << endl;
-}
+{ }
 
 double Farm::withdraw(double amount_to_get)
 {

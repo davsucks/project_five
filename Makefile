@@ -6,7 +6,7 @@ LFLAGS = -g
 OBJS = p5_main.o Model.o View.o Views.o Controller.o 
 OBJS += Sim_object.o Structure.o Moving_object.o Agent.o
 OBJS += Farm.o Town_Hall.o
-OBJS += Peasant.o Soldier.o
+OBJS += Peasant.o Warriors.o
 OBJS += Agent_factory.o Structure_factory.o
 OBJS += Geometry.o Utility.o
 PROG = proj5exe
@@ -14,7 +14,7 @@ PROG = proj5exe
 TEST_OBJS = Test.o Model.o View.o Views.o Controller.o
 TEST_OBJS += Sim_object.o Structure.o Moving_object.o Agent.o
 TEST_OBJS += Farm.o Town_Hall.o
-TEST_OBJS += Peasant.o Soldier.o
+TEST_OBJS += Peasant.o Warriors.o
 TEST_OBJS += Agent_factory.o Structure_factory.o
 TEST_OBJS += Geometry.o Utility.o
 TEST_EXE = testexe
@@ -67,8 +67,8 @@ Agent.o: Agent.cpp Agent.h Model.h Moving_object.h Sim_object.h Geometry.h Utili
 Peasant.o: Peasant.cpp Peasant.h Agent.h Moving_object.h Sim_object.h Geometry.h Utility.h
 	$(CC) $(CFLAGS) Peasant.cpp
 
-Soldier.o: Soldier.cpp Soldier.h Agent.h Moving_object.h Sim_object.h Geometry.h Utility.h
-	$(CC) $(CFLAGS) Soldier.cpp
+Warriors.o: Warriors.cpp Warriors.h Agent.h Moving_object.h Sim_object.h Geometry.h Utility.h
+	$(CC) $(CFLAGS) Warriors.cpp
 
 Moving_object.o: Moving_object.cpp Moving_object.h Geometry.h Utility.h
 	$(CC) $(CFLAGS) Moving_object.cpp
