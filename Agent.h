@@ -68,6 +68,7 @@ protected:
 	void lose_health(int attack_strength);
 
 private:
+	
 	// Agent how "has-a" moving object
 	Moving_object moving_obj;
 	// Emun to indicate if the agent is alive or dead

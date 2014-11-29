@@ -96,7 +96,6 @@ public:
 	// prints out the current map
 	void draw() override;
 	// tells the view to "forget" all the information it has
-	// TODO: not sure if I need this...
 	void clear() override;
 	// update the origin to match the objects new location
 	void update_location(const std::string& name, Point location) override;

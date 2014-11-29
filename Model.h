@@ -22,10 +22,10 @@ Model also provides facilities for looking up objects given their name.
 Notice how only the Standard Library headers need to be included - reduced coupling!
 
 */
-#include <string>
-#include <map>
 #include <list>
+#include <map>
 #include <memory>
+#include <string>
 #include <utility>
 // other forward declarations
 struct Structure;
@@ -36,6 +36,7 @@ struct Sim_object;
  
 class Model {
 public:
+	// asks model to retrieve the instance of model that exists in static memory
 	static Model& get_Model();
 
 	// return the current time
@@ -95,7 +96,6 @@ public:
 private:
 	// make Model a singleton by making the constructor private
 	Model();
-	~Model();
 
 	int time;
 	

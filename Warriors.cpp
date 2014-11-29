@@ -1,8 +1,10 @@
 #include "Warriors.h"
-#include "Structure.h"
+
 #include "Geometry.h"
-#include "Utility.h"
 #include "Model.h"
+#include "Structure.h"
+#include "Utility.h"
+
 #include <iostream>
 using namespace std;
 
@@ -68,13 +70,6 @@ void Warrior::start_attacking(shared_ptr<Agent> target_ptr)
 	attack(target_ptr);
 }
 
-void Warrior::attack(shared_ptr<Agent> target_ptr)
-{
-	target = target_ptr;
-	cout << get_name() << ": I'm attacking!" << endl;
-	attack_state = Attack_State_e::ATTACKING;
-}
-
 // Overrides Agent's take_hit to counterattack when attacked.
 void Warrior::take_hit(int attack_strength, shared_ptr<Agent> attacker_ptr)
 {
@@ -107,6 +102,13 @@ void Warrior::reset_attacking()
 	target.reset();
 }
 
+void Warrior::attack(shared_ptr<Agent> target_ptr)
+{
+	target = target_ptr;
+	cout << get_name() << ": I'm attacking!" << endl;
+	attack_state = Attack_State_e::ATTACKING;
+}
+
 // ==============================
 // === SOLDIER IMPLEMENTATION ===
 // ==============================
@@ -123,7 +125,7 @@ void Soldier::take_hit(int attack_strength, std::shared_ptr<Agent> attacker_ptr)
 {
 	// lose health
 	Warrior::take_hit(attack_strength, attacker_ptr);
-	// retaliate if in range
+	// retaliate
 	if (Warrior::is_attacking()) {
 		if (!Agent::is_alive()) {
 			reset_attacking();

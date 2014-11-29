@@ -1,7 +1,7 @@
 #include "Peasant.h"
+#include "Model.h"
 #include "Structure.h"
 #include "Utility.h"
-#include "Model.h"
 #include <iostream>
 using namespace std;
 

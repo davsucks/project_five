@@ -1,62 +1,28 @@
 #include "Model.h"
-#include "View.h"
-#include "Sim_object.h"
-#include "Structure.h"
+
 #include "Agent.h"
 #include "Agent_factory.h"
-#include "Structure_factory.h"
 #include "Geometry.h"
+#include "Sim_object.h"
+#include "Structure.h"
+#include "Structure_factory.h"
 #include "Utility.h"
-#include <iostream>
+#include "View.h"
+
 #include <algorithm>
+#include <iostream>
 using namespace std;
 
 // error messages
 const char* const no_structure {"Structure not found!"};
 const char* const no_agent {"Agent not found!"};
-
-// default Model's instance to nullptr
-// Model Model::ptr = nullptr;
-
-void Model::insert_Agent(shared_ptr<Agent> agent)
-{
-	sim_objs.insert(make_pair(agent->get_name(), agent));
-	agent_objs.insert(make_pair(agent->get_name(), agent));
-}
-void Model::insert_Structure(shared_ptr<Structure> structure)
-{
-	sim_objs.insert(make_pair(structure->get_name(), structure));
-	structure_objs.insert(make_pair(structure->get_name(), structure));
-}
+const char* const no_view {"No view of that name available!"};
 
 // should be one of the only uses of a "raw" pointer in the program
 Model& Model::get_Model()
 {
 	static Model model;
 	return model;
-}
-
-Model::Model()
-{
-	insert_Structure(create_structure("Rivendale", "Farm", Point(10., 10.)));
-	insert_Structure(create_structure("Sunnybrook", "Farm", Point(0., 30.)));
-	insert_Structure(create_structure("Shire", "Town_Hall", Point(20., 20.)));
-	insert_Structure(create_structure("Paduca", "Town_Hall", Point(30., 30.)));
-	
-	insert_Agent(create_agent("Pippin", "Peasant", Point(5., 10.)));
-	insert_Agent(create_agent("Merry", "Peasant", Point(0., 25.)));
-	insert_Agent(create_agent("Zug", "Soldier", Point(20., 30.)));
-	insert_Agent(create_agent("Bug", "Soldier", Point(15., 20.)));
-	insert_Agent(create_agent("Iriel", "Archer", Point(20., 38.)));
-}
-
-// destroy all objects
-Model::~Model()
-{
-	for(auto& i : sim_objs)
-		i.second.reset();
-	for(auto& i : views)
-		i.second.reset();
 }
 
 // is name already in use for either agent or structure?
@@ -180,20 +146,20 @@ void Model::notify_gone(const string& name)
 	for(auto& i : views)
 		i.second->update_remove(name);
 }
-
+// notify every view to draw itself
 void Model::draw_all_views()
 {
 	for(auto& i : views)
 		i.second->draw();
 }
-
+// returns the view specified by view_name, otherwise throw an error
 shared_ptr<View> Model::get_view(const string& view_name)
 {
 	for(auto& i : views) {
 		if(i.first == view_name)
 			return i.second;
 	}
-	return shared_ptr<View>();
+	throw Error(no_view);
 }
 
 // function object to compare distances between two Agents and the saved agent
@@ -232,4 +198,29 @@ shared_ptr<Agent> Model::get_closest_agent(shared_ptr<Agent> current_agent)
 shared_ptr<Structure> Model::get_closest_structure(shared_ptr<Agent> current_agent)
 {
 	return min_element(structure_objs.begin(), structure_objs.end(), CompSimObjDistance(current_agent))->second;
+}
+
+Model::Model()
+{
+	insert_Structure(create_structure("Rivendale", "Farm", Point(10., 10.)));
+	insert_Structure(create_structure("Sunnybrook", "Farm", Point(0., 30.)));
+	insert_Structure(create_structure("Shire", "Town_Hall", Point(20., 20.)));
+	insert_Structure(create_structure("Paduca", "Town_Hall", Point(30., 30.)));
+	
+	insert_Agent(create_agent("Pippin", "Peasant", Point(5., 10.)));
+	insert_Agent(create_agent("Merry", "Peasant", Point(0., 25.)));
+	insert_Agent(create_agent("Zug", "Soldier", Point(20., 30.)));
+	insert_Agent(create_agent("Bug", "Soldier", Point(15., 20.)));
+	insert_Agent(create_agent("Iriel", "Archer", Point(20., 38.)));
+}
+
+void Model::insert_Agent(shared_ptr<Agent> agent)
+{
+	sim_objs.insert(make_pair(agent->get_name(), agent));
+	agent_objs.insert(make_pair(agent->get_name(), agent));
+}
+void Model::insert_Structure(shared_ptr<Structure> structure)
+{
+	sim_objs.insert(make_pair(structure->get_name(), structure));
+	structure_objs.insert(make_pair(structure->get_name(), structure));
 }
