@@ -1,20 +1,20 @@
 #include "Controller.h"
+
+#include "Agent.h"
+#include "Agent_factory.h"
 #include "Model.h"
 #include "View.h"
 #include "Views.h"
 #include "Structure.h"
-#include "Utility.h"
 #include "Structure_factory.h"
-#include "Agent.h"
-#include "Agent_factory.h"
-#include <iostream>
-#include <map>
+#include "Utility.h"
+
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 using namespace std;
 
 // types for the command map
-// TODO: review proj3 feedback and see what kieras said about this
 using CommandFunction = void (Controller::*)();
 using Command_Map_t = map<string, CommandFunction>;
 
@@ -34,14 +34,14 @@ const char* const no_view {"No view of that name is open!"};
 const char* const map_str {"map"};
 const char* const no_map {"No map view is open!"};
 
-Controller::Controller()
-{}
-
-void clear_and_skip_line()
-{
-	cin.clear();
-	while (cin.get() != '\n');
-}
+// ==================================
+// === HELPER FUNCTION PROTOTYPES ===
+// ==================================
+void clear_and_skip_line();
+void check_cin(string message);
+bool string_is_alnum(const string &str);
+bool char_is_alnum(char c);
+Point read_Point();
 
 void Controller::run()
 {
@@ -80,8 +80,6 @@ void Controller::run()
 		cout << "\nTime " << Model::get_Model()->get_time() << ": Enter command: ";
 		cin >> first_word;
 		if (first_word == "quit") {
-			// TODO: shouldn't need this, shared_ptrs yo
-			// delete view;
 			cout << "Done" << endl;
 			return;
 		}
@@ -120,6 +118,12 @@ void Controller::run()
 	}
 }
 
+void clear_and_skip_line()
+{
+	cin.clear();
+	while (cin.get() != '\n');
+}
+
 // View factory
 shared_ptr<View> Controller::create_view(const string& name)
 {
@@ -142,19 +146,6 @@ shared_ptr<View> Controller::create_view(const string& name)
 		}
 	}
 }
-// TODO: order all these functions
-// checks to see if the view is already open, throws an error if so
-void Controller::check_if_open(const string& name, const string& error_msg)
-{
-	if (views_in_use[name])
-		throw Error(error_msg);
-}
-
-void Controller::check_if_not_open(const string& name, const string& error_msg)
-{
-	if (!views_in_use[name])
-		throw Error(error_msg);
-}
 
 // command functions by category
 // view:
@@ -162,7 +153,9 @@ void Controller::open()
 {
 	string view_name;
 	cin >> view_name;
-	check_if_open(view_name, view_already_exists);
+	// check to see if the view is already open
+	if (views_in_use[view_name])
+		throw Error(view_already_exists);
 	shared_ptr<View> new_view = create_view(view_name);
 	views_in_use[view_name] = true;
 	Model::get_Model()->attach(view_name, new_view);
@@ -172,7 +165,9 @@ void Controller::close()
 {
 	string view_name;
 	cin >> view_name;
-	check_if_not_open(view_name, no_view);
+	// check if the view is currently not in use
+	if (!views_in_use[view_name])
+		throw Error(no_view);
 	views_in_use[view_name] = false;
 	Model::get_Model()->detach(view_name);
 }
@@ -184,13 +179,6 @@ void Controller::default_fn()
 	view->set_defaults();
 }
 
-// checks that cin is valid, if not, throws an error containing message
-void check_cin(string message)
-{
-	if (!cin) {
-		throw Error(message);
-	}
-}
 void Controller::size()
 {
 	check_if_not_open(map_str, no_map);
@@ -211,20 +199,25 @@ void Controller::zoom()
 	view->set_scale(scale);
 }
 
-Point read_Point()
+// checks that cin is valid, if not, throws an error containing message
+void check_cin(string message)
 {
-	double x, y;
-	cin >> x;
-	check_cin(expected_double);
-	cin >> y;
-	check_cin(expected_double);
-	return Point(x, y);
+	if (!cin) {
+		throw Error(message);
+	}
 }
+
 void Controller::pan()
 {
 	check_if_not_open(map_str, no_map);
 	shared_ptr<View> view = Model::get_Model()->get_view(map_str);
 	view->set_origin(read_Point());
+}
+
+void Controller::check_if_not_open(const string& name, const string& error_msg)
+{
+	if (!views_in_use[name])
+		throw Error(error_msg);
 }
 
 // program-wide commands
@@ -242,15 +235,6 @@ void Controller::go()
 {
 	Model::get_Model()->update();
 }
-
-bool char_is_alnum(char c)
-{
-	return isalnum(c);
-}
-bool string_is_alnum(const string &str)
-{
-    return find_if_not(str.begin(), str.end(), char_is_alnum) == str.end();
-}
 // throws an error if the name is less than 2 characters,
 // if a name was unable to be read to cin, or if the name
 // isn't alphanumeric
@@ -263,6 +247,18 @@ void check_name(string name)
 	if (too_short || not_alnum || Model::get_Model()->is_name_in_use(name))
 		throw Error(invalid_name);
 }
+
+bool string_is_alnum(const string &str)
+{
+    return find_if_not(str.begin(), str.end(), char_is_alnum) == str.end();
+}
+
+
+bool char_is_alnum(char c)
+{
+	return isalnum(c);
+}
+
 void Controller::build()
 {
 	string name, type;
@@ -290,6 +286,16 @@ void Controller::move(shared_ptr<Agent> agent)
 {
 	Point location = read_Point();
 	agent->move_to(location);
+}
+
+Point read_Point()
+{
+	double x, y;
+	cin >> x;
+	check_cin(expected_double);
+	cin >> y;
+	check_cin(expected_double);
+	return Point(x, y);
 }
 
 void Controller::work(shared_ptr<Agent> agent)

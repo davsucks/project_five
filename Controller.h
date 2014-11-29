@@ -13,9 +13,8 @@ struct View;
 struct Agent;
 
 class Controller {
-public:	
-	Controller();
-
+public:
+	
 	// run the program by acccepting user commands
 	void run();
 
@@ -46,10 +45,10 @@ private:
 
 	// view factory
 	std::shared_ptr<View> create_view(const std::string& name);
-	// queries views_in_use to see if the view is currently open
-	void check_if_open(const std::string& name, const std::string& error_msg);
-	// TODO: refactor this maybe?
+	// queries views_in_use to see if the view is currently not
+	// open and throws the error with the given message
 	void check_if_not_open(const std::string& name, const std::string& error_msg);
+	// an std::map to easily know which types of views are being used
 	std::map<std::string, bool> views_in_use;
 };
 

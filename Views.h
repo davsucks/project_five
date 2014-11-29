@@ -1,9 +1,44 @@
 #ifndef VIEWS_H
 #define VIEWS_H
-/* *** View class ***
-The View class encapsulates the data and functions needed to generate the map
-display, and control its properties. It has a "memory" for the names and locations
-of the to-be-plotted objects.
+/* *** View hierarchy ***
+The View hierarchy is implemented with 7 classes total, a View base class,
+which provides the interface for all the derived classes, and is
+located in View.h and View.cpp
+In this file are the other 6 classes that make up the majority of the
+class hierarchy.
+There are two views that are derived directly from View: Grid and Values.
+Grid represents the top down grid-based view, its responsibilities include
+keeping track of the sim_objs which are abstracted away to just std::pairs of
+strings and points. In addition it provides the functionality to its derived
+classes to populate and display its data to users.
+
+Derived from Grid are Map and Local.
+Both Map and Local are responsible for encapsulating data about their
+origins, size and scale. For Map, this data is subject to change at the hands
+of the user, but for Local, this information is either updated automatically or
+not able to be changed at all.
+
+Map	is the original view from project 4, it contains functionality to display
+an area of land that can be adjusted by the user. It therefore overloads the setter
+functions and the draw function
+
+Local is the view that is tied to a specific agent it therefore updates it's
+origin every time the agent moves and doesn't expose any of the setter functionality
+to its user.
+
+On the other side of the view hierarchy we have the Values class, from which
+are derived both Health and Amounts view.
+Values encapsulates data regarding sim_objects in our simulation, abstracted
+away to just pairs of strings and doubles. When asked to draw, it will output a
+nicely readable list of its data.
+
+Derived from Values are Health and Amounts
+
+Health stores information regarding the health of specific agents.
+
+Amounts stores information regarding the amount of food that agents or structures
+currently have on hand.
+
 
 Usage: 
 1. Call the update_location function with the name and position of each object
@@ -14,14 +49,10 @@ updated with a call to update_location.
 2. Call the update_remove function with the name of any object that should no longer
 be plotted. This must be done *after* any call to update_location that 
 has the same object name since update_location will add any object name supplied.
-3. Call the draw function to print out the map. 
-4. As needed, change the origin, scale, or displayed size of the map 
-with the appropriate functions. Since the view "remembers" the previously updated
-information, immediately calling the draw function will print out a map showing the previous objects
-using the new settings.
+3. Call the draw function to print out the map.
 */
-#include <string>
 #include <map>
+#include <string>
 #include <vector>
 #include "Geometry.h"
 #include "View.h"
@@ -41,8 +72,9 @@ public:
 	void update_remove(const std::string& name) override;
 
 protected:
-	// TODO: move these into a friend class?
-	// TODO: that would probably couple everything too tightly
+	// since populating and printing the grid is shared functionality
+	// they're provided here as protected to avoid duplicating code
+	// between Local and Map
 	bool get_subscripts(int &ix, int &iy, Point location, const int& size, const double& scale, const Point& origin);
 	// populates grid with outliers in a serparate vector
 	void populate_grid(std::vector<std::vector<std::string>>& grid, std::vector<std::string>& outside, const int& size, const double& scale, const Point& origin);
@@ -98,7 +130,7 @@ public:
 	void set_defaults() override;
 
 private:
-	void print_grid(std::vector<std::vector<std::string>>& grid, std::vector<std::string>& outside);
+	void print_grid(std::vector< std::vector<std::string> >& grid, std::vector<std::string>& outside);
 	void print_outliers(std::vector<std::string>& outside);
 
 	int size;
@@ -124,6 +156,7 @@ private:
 	std::map<std::string, double> stored_values;
 };
 
+// Health keeps track of the health of agents in the simulation
 class Health : public Values {
 public:
 	// display information
@@ -132,13 +165,14 @@ public:
 	void update_health(const std::string& name, double health) override;
 };
 
+// Amounts keeps track of the amount of food that is being carried by an agent,
+// or stored in a structure
 class Amounts : public Values {
 public:
 	// display information
 	void draw() override;
 	// update the amount
 	void update_amount(const std::string& name, double amount) override;
-
 };
 
 #endif

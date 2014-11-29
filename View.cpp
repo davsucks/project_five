@@ -2,6 +2,8 @@
 #include "Geometry.h"
 using namespace std;
 
+// View provides the interface for essentially every super class derived from it
+// therefore we'll give most of View's function an empty implementation
 // provide a fat interface for derived classes
 
 // Save the supplied name and location for future use in a draw() call

@@ -129,8 +129,7 @@ name {name_},
 size {def_local_size_c}, 
 scale {def_local_scale_c},
 origin(calculate_origin(location))
-{
-}
+{ }
 
 void Local::draw()
 {
@@ -313,6 +312,7 @@ void Amounts::draw()
 	cout << "Current " << "Amounts" << ":" << endl;
 	Values::draw();
 }
+
 // update the amount
 void Amounts::update_amount(const std::string& name, double amount)
 {

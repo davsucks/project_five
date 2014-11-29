@@ -20,13 +20,13 @@ Model* Model::ptr = nullptr;
 
 void Model::insert_Agent(shared_ptr<Agent> agent)
 {
-	sim_objs.insert(pair<string, shared_ptr<Sim_object>>(agent->get_name(), agent) );
-	agent_objs.insert(pair<string, shared_ptr<Agent>>(agent->get_name(), agent) );
+	sim_objs.insert(make_pair(agent->get_name(), agent));
+	agent_objs.insert(make_pair(agent->get_name(), agent));
 }
 void Model::insert_Structure(shared_ptr<Structure> structure)
 {
-	sim_objs.insert(pair<string, shared_ptr<Sim_object>>(structure->get_name(), structure) );
-	structure_objs.insert(pair<string, shared_ptr<Structure>>(structure->get_name(), structure));
+	sim_objs.insert(make_pair(structure->get_name(), structure));
+	structure_objs.insert(make_pair(structure->get_name(), structure));
 }
 
 // should be one of the only uses of a "raw" pointer in the program
@@ -54,9 +54,10 @@ Model::Model()
 // destroy all objects
 Model::~Model()
 {
-	// TODO: might not need this anymore
-	// for(auto& i : sim_objs)
-	// 	delete i.second;
+	for(auto& i : sim_objs)
+		i.second.reset();
+	for(auto& i : views)
+		i.second.reset();
 }
 
 // is name already in use for either agent or structure?
@@ -74,8 +75,8 @@ bool Model::is_structure_present(const string& name) const
 // add a new structure; assumes none with the same name
 void Model::add_structure(shared_ptr<Structure> new_structure)
 {
-	sim_objs.insert( pair<string, shared_ptr<Sim_object>>(new_structure->get_name(), new_structure));
-	structure_objs.insert( pair<string, shared_ptr<Structure>>(new_structure->get_name(), new_structure));
+	sim_objs.insert(make_pair(new_structure->get_name(), new_structure));
+	structure_objs.insert(make_pair(new_structure->get_name(), new_structure));
 	new_structure->broadcast_current_state();
 }
 
@@ -98,8 +99,8 @@ bool Model::is_agent_present(const string& name) const
 // add a new agent; assumes none with the same name
 void Model::add_agent(shared_ptr<Agent> new_agent)
 {
-	sim_objs.insert( pair<string, shared_ptr<Sim_object>>(new_agent->get_name(), new_agent));
-	agent_objs.insert( pair<string, shared_ptr<Agent>>(new_agent->get_name(), new_agent));
+	sim_objs.insert( make_pair(new_agent->get_name(), new_agent));
+	agent_objs.insert( make_pair(new_agent->get_name(), new_agent));
 	new_agent->broadcast_current_state();
 }
 // will throw Error("Agent not found!") if no agent of that name
