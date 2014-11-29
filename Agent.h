@@ -7,8 +7,9 @@ is decreased when they take a hit. If the Agent's health > 0, it is alive.
 If its heath <= 0, it starts dying, then on subsequent updates, 
 it becomes dead, and finally disappearing.
 */
-#include "Sim_object.h"
 #include "Moving_object.h"
+#include "Sim_object.h"
+
 #include <memory>
 #include <string>
 
@@ -21,7 +22,7 @@ public:
 
 	Agent(const std::string& name_, Point location_);
 
-	// return true if this agent is Alive or Disappearing
+	// return true if this agent is Alive
 	bool is_alive() const
 	{return health_state == Health_State_e::ALIVE;}
 	// return this Agent's location
@@ -62,17 +63,17 @@ public:
 
 protected:
 	
-
 	// calculate loss of health due to hit.
 	// if health decreases to zero or negative, Agent state becomes Dead, and any movement is stopped.
 	void lose_health(int attack_strength);
 
 private:
+	// Agent how "has-a" moving object
 	Moving_object moving_obj;
-
+	// Emun to indicate if the agent is alive or dead
 	enum class Health_State_e { ALIVE, DEAD };
 	Health_State_e health_state;
-
+	// represents the amount of health an agent has
 	int health;
 };
 
