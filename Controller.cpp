@@ -43,9 +43,12 @@ bool string_is_alnum(const string &str);
 bool char_is_alnum(char c);
 Point read_Point();
 
+// ===================
+// === DEFINTIIONS ===
+// ===================
+
 void Controller::run()
 {
-
 	Command_Map_t command_map;
 	Agent_Command_Map_t agent_command_map;
 
@@ -77,15 +80,15 @@ void Controller::run()
 	string first_word;
 	while(true) {
 		try {
-		cout << "\nTime " << Model::get_Model()->get_time() << ": Enter command: ";
+		cout << "\nTime " << Model::get_Model().get_time() << ": Enter command: ";
 		cin >> first_word;
 		if (first_word == "quit") {
 			cout << "Done" << endl;
 			return;
 		}
 		// test if word is name of an agent
-		if (Model::get_Model()->is_agent_present(first_word)) {
-			shared_ptr<Agent> agent = Model::get_Model()->get_agent_ptr(first_word);
+		if (Model::get_Model().is_agent_present(first_word)) {
+			shared_ptr<Agent> agent = Model::get_Model().get_agent_ptr(first_word);
 			assert(agent->is_alive());
 			string cmd_name;
 			cin >> cmd_name;
@@ -135,13 +138,13 @@ shared_ptr<View> Controller::create_view(const string& name)
 		return shared_ptr<View>(new Amounts);
 	} else {
 		// local view for agent
-		if (!Model::get_Model()->is_name_in_use(name))
+		if (!Model::get_Model().is_name_in_use(name))
 			throw Error(no_object_of_name);
-		if (Model::get_Model()->is_agent_present(name)) {
-			shared_ptr<Agent> agent = Model::get_Model()->get_agent_ptr(name);
+		if (Model::get_Model().is_agent_present(name)) {
+			shared_ptr<Agent> agent = Model::get_Model().get_agent_ptr(name);
 			return shared_ptr<View>(new Local(agent->get_location(), name));
 		} else {
-			shared_ptr<Structure> structure = Model::get_Model()->get_structure_ptr(name);
+			shared_ptr<Structure> structure = Model::get_Model().get_structure_ptr(name);
 			return shared_ptr<View>(new Local(structure->get_location(), name));
 		}
 	}
@@ -158,7 +161,7 @@ void Controller::open()
 		throw Error(view_already_exists);
 	shared_ptr<View> new_view = create_view(view_name);
 	views_in_use[view_name] = true;
-	Model::get_Model()->attach(view_name, new_view);
+	Model::get_Model().attach(view_name, new_view);
 }
 
 void Controller::close()
@@ -169,13 +172,13 @@ void Controller::close()
 	if (!views_in_use[view_name])
 		throw Error(no_view);
 	views_in_use[view_name] = false;
-	Model::get_Model()->detach(view_name);
+	Model::get_Model().detach(view_name);
 }
 
 void Controller::default_fn()
 {
 	check_if_not_open(map_str, no_map);
-	shared_ptr<View> view = Model::get_Model()->get_view(map_str);
+	shared_ptr<View> view = Model::get_Model().get_view(map_str);
 	view->set_defaults();
 }
 
@@ -185,7 +188,7 @@ void Controller::size()
 	int size;
 	cin >> size;
 	check_cin(expected_int);
-	shared_ptr<View> view = Model::get_Model()->get_view(map_str);
+	shared_ptr<View> view = Model::get_Model().get_view(map_str);
 	view->set_size(size);
 }
 
@@ -195,7 +198,7 @@ void Controller::zoom()
 	double scale;
 	cin >> scale;
 	check_cin(expected_double);
-	shared_ptr<View> view = Model::get_Model()->get_view(map_str);
+	shared_ptr<View> view = Model::get_Model().get_view(map_str);
 	view->set_scale(scale);
 }
 
@@ -210,7 +213,7 @@ void check_cin(string message)
 void Controller::pan()
 {
 	check_if_not_open(map_str, no_map);
-	shared_ptr<View> view = Model::get_Model()->get_view(map_str);
+	shared_ptr<View> view = Model::get_Model().get_view(map_str);
 	view->set_origin(read_Point());
 }
 
@@ -223,17 +226,17 @@ void Controller::check_if_not_open(const string& name, const string& error_msg)
 // program-wide commands
 void Controller::status()
 {
-	Model::get_Model()->describe();
+	Model::get_Model().describe();
 }
 
 void Controller::show()
 {
-	Model::get_Model()->draw_all_views();
+	Model::get_Model().draw_all_views();
 }
 
 void Controller::go()
 {
-	Model::get_Model()->update();
+	Model::get_Model().update();
 }
 // throws an error if the name is less than 2 characters,
 // if a name was unable to be read to cin, or if the name
@@ -244,7 +247,7 @@ void check_name(string name)
 
 	bool too_short = name.length() < min_chars_c;
 	bool not_alnum = !string_is_alnum(name);
-	if (too_short || not_alnum || Model::get_Model()->is_name_in_use(name))
+	if (too_short || not_alnum || Model::get_Model().is_name_in_use(name))
 		throw Error(invalid_name);
 }
 
@@ -267,7 +270,7 @@ void Controller::build()
 	cin >> type;
 	Point location = read_Point();
 	shared_ptr<Structure> new_structure = create_structure(name, type, location);
-	Model::get_Model()->add_structure(new_structure);
+	Model::get_Model().add_structure(new_structure);
 }
 
 void Controller::train()
@@ -278,7 +281,7 @@ void Controller::train()
 	cin >> type;
 	Point location = read_Point();
 	shared_ptr<Agent> new_agent = create_agent(name, type, location);
-	Model::get_Model()->add_agent(new_agent);
+	Model::get_Model().add_agent(new_agent);
 }
 
 // agent commands
@@ -302,9 +305,9 @@ void Controller::work(shared_ptr<Agent> agent)
 {
 	string destination_str, source_str;
 	cin >> source_str;
-	shared_ptr<Structure> source = Model::get_Model()->get_structure_ptr(source_str);
+	shared_ptr<Structure> source = Model::get_Model().get_structure_ptr(source_str);
 	cin >> destination_str;
-	shared_ptr<Structure> destination = Model::get_Model()->get_structure_ptr(destination_str);
+	shared_ptr<Structure> destination = Model::get_Model().get_structure_ptr(destination_str);
 	agent->start_working(source, destination);
 }
 
@@ -312,7 +315,7 @@ void Controller::attack(shared_ptr<Agent> agent)
 {
 	string name;
 	cin >> name;
-	shared_ptr<Agent> victim = Model::get_Model()->get_agent_ptr(name);
+	shared_ptr<Agent> victim = Model::get_Model().get_agent_ptr(name);
 	agent->start_attacking(victim);
 }
 

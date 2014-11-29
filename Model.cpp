@@ -16,7 +16,7 @@ const char* const no_structure {"Structure not found!"};
 const char* const no_agent {"Agent not found!"};
 
 // default Model's instance to nullptr
-Model* Model::ptr = nullptr;
+// Model Model::ptr = nullptr;
 
 void Model::insert_Agent(shared_ptr<Agent> agent)
 {
@@ -30,11 +30,10 @@ void Model::insert_Structure(shared_ptr<Structure> structure)
 }
 
 // should be one of the only uses of a "raw" pointer in the program
-Model* Model::get_Model()
+Model& Model::get_Model()
 {
-	if (!ptr)
-		ptr = new Model();
-	return ptr;
+	static Model model;
+	return model;
 }
 
 Model::Model()

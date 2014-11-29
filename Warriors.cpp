@@ -159,7 +159,7 @@ void Archer::update()
 	Warrior::update();
 	if (!Warrior::is_attacking()) {
 		// find next target
-		shared_ptr<Agent> target = Model::get_Model()->get_closest_agent(shared_from_this());
+		shared_ptr<Agent> target = Model::get_Model().get_closest_agent(shared_from_this());
 		if(cartesian_distance(get_location(), target->get_location()) <= def_archer_range_c) {
 			// new target is within range, attack!
 			start_attacking(target);
@@ -174,7 +174,7 @@ void Archer::take_hit(int attack_strength, std::shared_ptr<Agent> attacker_ptr)
 	if (!is_alive())
 		return;
 	// find the closest structure and run there
-	shared_ptr<Structure> closest_bld = Model::get_Model()->get_closest_structure(shared_from_this());
+	shared_ptr<Structure> closest_bld = Model::get_Model().get_closest_structure(shared_from_this());
 	cout << get_name() << ": I'm going to run away to " << closest_bld->get_name() << endl;
 	move_to(closest_bld->get_location());
 }

@@ -1,6 +1,11 @@
 #ifndef MODEL_H
 #define MODEL_H
 /*
+Model is made global through the use of the singleton pattern,
+notice how its constructor is declared private. The only way for users
+to get a hold of the model is to call the static method get_Model
+which will either create an instance of Model or return one that's already
+been made, through the magic of static memory
 Model is part of a simplified Model-View-Controller pattern.
 Model keeps track of the Sim_objects in our little world. It is the only
 component that knows how many Structures and Agents there are, but it does not
@@ -31,7 +36,7 @@ struct Sim_object;
  
 class Model {
 public:
-	static Model* get_Model();
+	static Model& get_Model();
 
 	// return the current time
 	int get_time() {return time;}
@@ -91,8 +96,6 @@ private:
 	// make Model a singleton by making the constructor private
 	Model();
 	~Model();
-
-	static Model* ptr;
 
 	int time;
 	
