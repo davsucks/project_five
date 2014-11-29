@@ -7,7 +7,6 @@ to start attacking another Agent and will continue the attack as long as
 it is alive and the target is alive and in range. If attacked, the Soldier will
 start attacking its attacker.
 */
-// TODO: this might be overkill
 #include <memory>
 #include <string>
 #include "Agent.h"
@@ -15,10 +14,10 @@ start attacking its attacker.
 class Warrior : public Agent {
 public:
 	
-	Warrior(const std::string& name_, Point location_, int attack_strength, int attack_range);
+	Warrior(const std::string& name_, Point location_, int attack_strength, int attack_range, const char* attack_noise);
+	~Warrior();
 	
 	// update implements Soldier behavior
-	// TODO: should this be virtual?
 	void update() override;
 	
 	// Make this Soldier start attacking the target Agent.
@@ -36,15 +35,11 @@ public:
 	void describe() const override;
 
 	bool is_attacking()
-	{ return attack_state == Attack_State_e::ATTACKING; }
-protected:
-	// the attack state is made protected because it is needed in this class'
-	// implementation as well as the subclasses implementation
-	// fn's for derived classes
-	// TODO: refactor to make this public?
-	void reset_attacking();
+	{return attack_state == Attack_State_e::ATTACKING;}
 
-	virtual const char* get_noise() const = 0;
+protected:
+	// these functions
+	void reset_attacking();
 
 	void attack(std::shared_ptr<Agent> target_ptr);
 
@@ -55,6 +50,7 @@ private:
 	int attack_strength;
 	int attack_range;
 	std::weak_ptr<Agent> target;
+	std::string* attack_noise;
 };
 
 class Soldier : public Warrior {
@@ -64,8 +60,6 @@ public:
 	void take_hit(int attack_strength, std::shared_ptr<Agent> attack_ptr) override;
 
 	void describe() const override;
-
-	const char* get_noise() const override;
 };
 
 class Archer : public Warrior {
@@ -77,9 +71,6 @@ public:
 	void take_hit(int attack_strength, std::shared_ptr<Agent> attack_ptr) override;
 
 	void describe() const override;
-
-	const char* get_noise() const override;
-private:	
 };
 
 #endif

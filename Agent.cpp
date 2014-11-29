@@ -97,8 +97,7 @@ void Agent::broadcast_current_state()
 			break;
 		case Health_State_e::DEAD:
 		default:
-			// TODO: remove this?
-			Model::get_Model()->notify_gone(get_name()); // shouldn't ever be called
+		// if the agent is dead he will already have removed himself from model's containers
 			break;
 	}
 }
@@ -123,11 +122,9 @@ void Agent::lose_health(int attack_strength)
 	health -= attack_strength;
 	if (health <= 0) {
 		health_state = Health_State_e::DEAD;
-		broadcast_current_state();
 		moving_obj.stop_moving();
 		cout << get_name() << ": Arrggh!" << endl;
 		Model::get_Model()->remove_agent(shared_from_this());
-		// TODO: pretty sure this is right
 		Model::get_Model()->notify_gone(get_name());
 	} else {
 		Model::get_Model()->notify_health(get_name(), health);

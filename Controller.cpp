@@ -9,7 +9,6 @@
 #include "Agent_factory.h"
 #include <iostream>
 #include <map>
-#include <locale>
 #include <algorithm>
 #include <cassert>
 using namespace std;

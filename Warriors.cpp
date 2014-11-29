@@ -6,14 +6,20 @@
 #include <iostream>
 using namespace std;
 
-
-Warrior::Warrior(const std::string& name_, Point location_, int attack_strength_, int attack_range_)
+Warrior::Warrior(const std::string& name_, Point location_, int attack_strength_, int attack_range_, const char* attack_noise_)
 :
 Agent(name_, location_),
 attack_state {Attack_State_e::NOT_ATTACKING},
 attack_strength {attack_strength_},
 attack_range {attack_range_}
-{ }
+{
+	attack_noise = new string(attack_noise_);
+}
+
+Warrior::~Warrior()
+{
+	delete attack_noise;
+}
 
 // update implements Warrior behavior
 void Warrior::update()
@@ -36,7 +42,7 @@ void Warrior::update()
 		target.reset();
 		return;
 	}
-	cout << get_name() << ": " << get_noise() << endl;
+	cout << get_name() << ": " << *attack_noise << endl;
 	shared_target->take_hit(attack_strength, shared_from_this());
 	if (!shared_target || !shared_target->is_alive()) {
 		cout << get_name() << ": I triumph!" << endl;
@@ -110,10 +116,8 @@ static const int def_soldier_range_c {2};
 static const char* const clang_c {"Clang!"};
 
 Soldier::Soldier(const string& name_, Point location_)
-: Warrior(name_, location_, def_soldier_strength_c, def_soldier_range_c)
-{
-
-}
+: Warrior(name_, location_, def_soldier_strength_c, def_soldier_range_c, clang_c)
+{ }
 
 void Soldier::take_hit(int attack_strength, std::shared_ptr<Agent> attacker_ptr)
 {
@@ -137,11 +141,6 @@ void Soldier::describe() const
 	Warrior::describe();
 }
 
-const char* Soldier::get_noise() const
-{
-	return clang_c;
-}
-
 // =============================
 // === ARCHER IMPLEMENTATION ===
 // =============================
@@ -152,7 +151,7 @@ static const char* const twang_c {"Twang!"};
 
 Archer::Archer(const std::string& name_, Point location_)
 :
-Warrior(name_, location_, def_archer_strength_c, def_archer_range_c)
+Warrior(name_, location_, def_archer_strength_c, def_archer_range_c, twang_c)
 {}
 
 void Archer::update()
@@ -184,9 +183,4 @@ void Archer::describe() const
 {
 	cout << "Archer ";
 	Warrior::describe();
-}
-
-const char* Archer::get_noise() const
-{
-	return twang_c;
 }

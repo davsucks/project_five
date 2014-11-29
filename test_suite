@@ -1,0 +1,26 @@
+make real_clean
+make
+cat behavior_samples/fight/in.txt | ./proj5exe > output
+diff output behavior_samples/fight/out.txt
+echo "first test complete"
+cat behavior_samples/fight/noshow_in.txt | ./proj5exe > output
+diff output behavior_samples/fight/noshow_out.txt
+echo "second test complete"
+cat behavior_samples/name_validity/in.txt | ./proj5exe > output
+diff output behavior_samples/name_validity/out.txt
+echo "third test complete"
+cat behavior_samples/new_features/in.txt | ./proj5exe > output
+diff output behavior_samples/new_features/out.txt
+echo "fourth test complete"
+cat behavior_samples/states/in.txt | ./proj5exe > output
+diff output behavior_samples/states/out.txt
+echo "fifth test complete"
+cat behavior_samples/views/in.txt | ./proj5exe > output
+diff output behavior_samples/views/out.txt
+echo "sixth test complete"
+cat behavior_samples/workviolence/in.txt | ./proj5exe > output
+diff output behavior_samples/workviolence/out.txt
+echo "seventh test complete"
+cat behavior_samples/workviolence/noshow_in.txt | ./proj5exe > output
+diff output behavior_samples/workviolence/noshow_out.txt
+echo "test suite complete, grats"
